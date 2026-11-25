@@ -39,7 +39,7 @@ export function FollowAlongController({
 }) {
   useAiFieldHighlights();
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   const queryClient = useQueryClient();
   const socket = useSocket();
   const embedded = useEmbedding().embedState.isEmbedded;
@@ -53,6 +53,8 @@ export function FollowAlongController({
   const selfNavRef = useRef<string | null>(null);
   const pathnameRef = useRef(pathname);
   pathnameRef.current = pathname;
+  const hashRef = useRef(hash);
+  hashRef.current = hash;
   const runOfTarget = useRef<string | null>(null);
 
   useEffect(() => {
@@ -178,7 +180,11 @@ export function FollowAlongController({
         }
         const route = resourceRegistry.parentRoute(change.resource);
         selfNavRef.current = route;
-        navigate(route, { replace: true });
+        const onSheet = hashRef.current === chatPanelUtils.SHEET_HASH;
+        navigate(onSheet ? `${route}${chatPanelUtils.SHEET_HASH}` : route, {
+          replace: true,
+          ...(onSheet && { state: { [chatPanelUtils.SHEET_STATE]: false } }),
+        });
         return true;
       });
     };
@@ -237,7 +243,11 @@ export function FollowAlongController({
         followAlong.dismissOffer();
         return true;
       }
-      if (latest.offer !== null && chatDom.inChat(focused)) return false;
+      const offersTarget =
+        latest.offer !== null &&
+        resourceRegistry.keyOf(latest.offer.resource) ===
+          resourceRegistry.keyOf(target);
+      if (offersTarget && chatDom.inChat(focused)) return false;
       if (
         pageFocus.isBusyIn(focused) ||
         followHold.holds({ fullPage: chatPanelUtils.isFullPage() })
