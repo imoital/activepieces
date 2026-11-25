@@ -135,7 +135,11 @@ export const BuilderHeader = ({ isFlowLocked }: { isFlowLocked: boolean }) => {
           )}
           {!embedState.hideFlowNameInBuilder && (
             <BreadcrumbItem className="min-w-16">
-              <BreadcrumbPage className="min-w-0">
+              <BreadcrumbPage
+                className="min-w-0"
+                role={undefined}
+                aria-disabled={undefined}
+              >
                 <div
                   data-ai-field={aiHighlightKey.flowName(flow.id)}
                   className={cn(
@@ -144,6 +148,7 @@ export const BuilderHeader = ({ isFlowLocked }: { isFlowLocked: boolean }) => {
                       'max-w-[500px]': !isEditingFlowName || readonly,
                     },
                   )}
+                  data-testid="builder-flow-name"
                 >
                   <EditableText
                     className="hover:cursor-text"
@@ -182,7 +187,12 @@ export const BuilderHeader = ({ isFlowLocked }: { isFlowLocked: boolean }) => {
                     onMoveTo={(folderId) => moveToFolderClientSide(folderId)}
                     onDuplicate={() => {}}
                   >
-                    <Button variant="ghost" size="icon-xs">
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      data-testid="builder-flow-menu"
+                      aria-label={t('Actions')}
+                    >
                       <ChevronDown className="h-4 w-4 text-gray-11" />
                     </Button>
                   </FlowActionMenu>
